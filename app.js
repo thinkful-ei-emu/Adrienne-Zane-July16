@@ -15,23 +15,37 @@ app.get('/apps', (req, res) => {
     }
   }
 
-  let results=playstore.filter(game=>game.App.toLowerCase());
+  if (genres) {
+    if(!['Action', 'Puzzle', 'Strategy', 'Casual', 'Arcade', 'Card'].includes(genres)) {
+      return res.status(400).send('Genres must be one of Action, Puzzle, Strategy, Casual, Arcade, or Card');
+    }
+  }
+
+  let queryResults = [];
+
+  let results=playstore
+    .filter(game=>
+      game
+        .App
+        .toLowerCase()
+    );
+
+  let genreResults = playstore.filter(type => type.Genres === genres);
+  // console.log(genreResults);
   
 
   if(sort){
     results.sort((a,b)=>{
       return a[sort]>b[sort]?1:a[sort]<b[sort]?-1:0;
     });
+    return res.json(results);
+  }
+  
+  if(genres){
+    return res.json(genreResults);
   }
 
-  
-
-  res.json(results);
-
 });
-
-
-
 
 
 app.listen(8000, () => {
